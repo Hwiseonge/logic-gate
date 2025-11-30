@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>주요 논리 게이트 시뮬레이션</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+
+        .gate-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 35px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            width: 90%;
+            max-width: 800px;
+        }
+
+        /* 게이트 내부 구조 */
+        .logic-circuit {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 15px;
+            gap: 15px;
+        }
+        
+        .inputs {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-width: 120px;
+        }
+        
+        .single-input .inputs {
+            align-items: center;
+        }
+
+        /* 입력 핀 */
+        .input-pin {
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: 1px solid #0056b3;
+            width: 100%;
+            margin: 3px 0;
+        }
+        .input-pin:active {
+            transform: scale(0.98);
+        }
+
+        /* 출력 핀 */
+        .output-pin {
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            border: 2px solid #28a745;
+            width: 100px;
+            min-width: 100px;
+        }
+
+        /* 핀 상태 색상 */
+        .low {
+            background-color: #ffdddd; 
+            color: #a00;
+        }
+        .high {
+            background-color: #ddffdd; 
+            color: #0a0;
+        }
+        .value {
+            font-size: 1.2em;
+            margin-left: 5px;
+        }
+
+    
+        .gate-symbol {
+            font-size: 20px;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 3px solid #007bff;
+            background-color: #eaf6ff;
+            color: #007bff;
+            min-width: 90px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .and-symbol { border-radius: 50px / 100px; }
+        .or-symbol { border-radius: 50%; }
+        .xor-symbol { border-radius: 50px / 100px; border-style: dashed; }
+        .not-symbol, .buffer-symbol { padding: 10px 10px; }
+
+        
+        .truth-table {
+            border-collapse: collapse;
+            width: 90%;
+            margin-top: 20px;
+            max-width: 300px;
+        }
+        .truth-table caption {
+            margin: 10px 0;
+            font-weight: bold;
+            color: #333;
+        }
+        .truth-table th, .truth-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+        .truth-table thead th {
+            background-color: #f0f0f0;
+        }
+        .truth-table .highlight {
+            background-color: #fff0b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>논리 게이트 시뮬레이션</h2>
+    <p style="text-align: center; margin-bottom: 30px;">공동교육과정에서 추가로 조사한 내용입니다.</p>
+
+    <div class="gate-container">
+        <h3>1. AND 게이트 (논리곱: A · B)</h3>
+        <div class="logic-circuit" id="and-circuit">
+            <div class="inputs">
+                <div class="input-pin low" id="andA" onclick="toggleInput('andA')">A: <span class="value" data-value="0">0</span></div>
+                <div class="input-pin low" id="andB" onclick="toggleInput('andB')">B: <span class="value" data-value="0">0</span></div>
+            </div>
+            <div class="gate-symbol and-symbol">AND</div>
+            <div class="output-pin low" id="andOut">Out: <span class="value" data-value="0">0</span></div>
+        </div>
+    </div>
+
+    <div class="gate-container">
+        <h3>2. OR 게이트 (논리합: A + B)</h3>
+        <div class="logic-circuit" id="or-circuit">
+            <div class="inputs">
+                <div class="input-pin low" id="orA" onclick="toggleInput('orA')">A: <span class="value" data-value="0">0</span></div>
+                <div class="input-pin low" id="orB" onclick="toggleInput('orB')">B: <span class="value" data-value="0">0</span></div>
+            </div>
+            <div class="gate-symbol or-symbol">OR</div>
+            <div class="output-pin low" id="orOut">Out: <span class="value" data-value="0">0</span></div>
+        </div>
+    </div>
+
+    <div class="gate-container single-input">
+        <h3>3. NOT 게이트 </h3>
+        <div class="logic-circuit" id="not-circuit">
+            <div class="inputs">
+                <div class="input-pin low" id="notA" onclick="toggleInput('notA')">A: <span class="value" data-value="0">0</span></div>
+            </div>
+            <div class="gate-symbol not-symbol">NOT</div>
+            <div class="output-pin high" id="notOut">Out: <span class="value" data-value="1">1</span></div>
+        </div>
+    </div>
+    
+    <div class="gate-container">
+        <h3>4. NAND 게이트 - 범용 게이트</h3>
+        <div class="logic-circuit" id="nand-circuit">
+            <div class="inputs">
+                <div class="input-pin low" id="nandA" onclick="toggleInput('nandA')">A: <span class="value" data-value="0">0</span></div>
+                <div class="input-pin low" id="nandB" onclick="toggleInput('nandB')">B: <span class="value" data-value="0">0</span></div>
+            </div>
+            <div class="gate-symbol and-symbol">NAND</div>
+            <div class="output-pin high" id="nandOut">Out: <span class="value" data-value="1">1</span></div>
+        </div>
+    </div>
+
+    <div class="gate-container">
+        <h3>5. NOR 게이트 - 범용 게이트</h3>
+        <div class="logic-circuit" id="nor-circuit">
+            <div class="inputs">
+                <div class="input-pin low" id="norA" onclick="toggleInput('norA')">A: <span class="value" data-value="0">0</span></div>
+                <div class="input-pin low" id="norB" onclick="toggleInput('norB')">B: <span class="value" data-value="0">0</span></div>
+            </div>
+            <div class="gate-symbol or-symbol">NOR</div>
+            <div class="output-pin high" id="norOut">Out: <span class="value" data-value="1">1</span></div>
+        </div>
+    </div>
+
+    <div class="gate-container">
+        <h3>6. XOR 게이트</h3>
+        <div class="logic-circuit" id="xor-circuit">
+            <div class="inputs">
+                <div class="input-pin low" id="xorA" onclick="toggleInput('xorA')">A: <span class="value" data-value="0">0</span></div>
+                <div class="input-pin low" id="xorB" onclick="toggleInput('xorB')">B: <span class="value" data-value="0">0</span></div>
+            </div>
+            <div class="gate-symbol xor-symbol">XOR</div>
+            <div class="output-pin low" id="xorOut">Out: <span class="value" data-value="0">0</span></div>
+        </div>
+    </div>
+    
+    <div class="gate-container single-input">
+        <h3>7. BUFFER 게이트 (버퍼: A) - 신호 증폭/지연</h3>
+        <div class="logic-circuit" id="buffer-circuit">
+            <div class="inputs">
+                <div class="input-pin low" id="bufferA" onclick="toggleInput('bufferA')">A: <span class="value" data-value="0">0</span></div>
+            </div>
+            <div class="gate-symbol buffer-symbol">BUFFER</div>
+            <div class="output-pin low" id="bufferOut">Out: <span class="value" data-value="0">0</span></div>
+        </div>
+    </div>
+
+    <script>
+        function toggleInput(pinId) {
+            const pinElement = document.getElementById(pinId);
+            const valueSpan = pinElement.querySelector('.value');
+            
+            let currentValue = parseInt(valueSpan.dataset.value);
+            let newValue = 1 - currentValue;
+            
+            valueSpan.dataset.value = newValue;
+            valueSpan.textContent = newValue;
+            pinElement.classList.remove('low', 'high');
+            pinElement.classList.add(newValue === 1 ? 'high' : 'low');
+
+          
+            if (pinId.startsWith('and')) {
+                calculateAND();
+            } else if (pinId.startsWith('or')) {
+                calculateOR();
+            } else if (pinId.startsWith('not')) {
+                calculateNOT();
+            } else if (pinId.startsWith('nand')) {
+                calculateNAND();
+            } else if (pinId.startsWith('nor')) {
+                calculateNOR();
+            } else if (pinId.startsWith('xor')) {
+                calculateXOR();
+            } else if (pinId.startsWith('buffer')) {
+                calculateBUFFER();
+            }
+        }
+
+        /**
+         * 출력 핀의 상태를 업데이트~~
+         */
+        function updateOutput(outputId, outputValue) {
+            const outputElement = document.getElementById(outputId);
+            const outputValueSpan = outputElement.querySelector('.value');
+            
+            outputValueSpan.dataset.value = outputValue;
+            outputValueSpan.textContent = outputValue;
+            
+            outputElement.classList.remove('low', 'high');
+            outputElement.classList.add(outputValue === 1 ? 'high' : 'low');
+        }
+        
+        // --- 2 입력 게이트 함수ㅇ ---
+        function getInputValues(prefix) {
+            const inputA = parseInt(document.getElementById(`${prefix}A`).querySelector('.value').dataset.value);
+            const inputB = parseInt(document.getElementById(`${prefix}B`).querySelector('.value').dataset.value);
+            return { inputA, inputB };
+        }
+
+        // --- 논리 연산 함수ㅇㅁ ---
+        
+        function calculateAND() {
+            const { inputA, inputB } = getInputValues('and');
+            const output = (inputA === 1 && inputB === 1) ? 1 : 0;
+            updateOutput('andOut', output);
+        }
+
+        function calculateOR() {
+            const { inputA, inputB } = getInputValues('or');
+            const output = (inputA === 1 || inputB === 1) ? 1 : 0;
+            updateOutput('orOut', output);
+        }
+
+        function calculateNAND() {
+            const { inputA, inputB } = getInputValues('nand');
+            // NAND: AND의 부정
+            const output = (inputA === 1 && inputB === 1) ? 0 : 1;
+            updateOutput('nandOut', output);
+        }
+
+        function calculateNOR() {
+            const { inputA, inputB } = getInputValues('nor');
+            // NOR: OR의 부정
+            const output = (inputA === 0 && inputB === 0) ? 1 : 0;
+            updateOutput('norOut', output);
+        }
+
+        function calculateXOR() {
+            const { inputA, inputB } = getInputValues('xor');
+            // XOR: 입력이 서로 다를 때 1
+            const output = (inputA !== inputB) ? 1 : 0;
+            updateOutput('xorOut', output);
+        }
+
+        // --- 1 입력 게이트 함수 ---
+        
+        function calculateNOT() {
+            const inputA = parseInt(document.getElementById('notA').querySelector('.value').dataset.value);
+            // NOT: 입력의 부정
+            const output = (inputA === 0) ? 1 : 0;
+            updateOutput('notOut', output);
+        }
+        
+        function calculateBUFFER() {
+            const inputA = parseInt(document.getElementById('bufferA').querySelector('.value').dataset.value);
+            // BUFFER: 입력과 동일
+            const output = inputA;
+            updateOutput('bufferOut', output);
+        }
+
+        // 초기계산
+        document.addEventListener('DOMContentLoaded', () => {
+            calculateAND();
+            calculateOR();
+            calculateNOT();
+            calculateNAND();
+            calculateNOR();
+            calculateXOR();
+            calculateBUFFER();
+        });
+    </script>
+</body>
+</html>
